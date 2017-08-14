@@ -4,7 +4,7 @@ A browser-agnostic, MacOS-integrated link log, featuring a pleasing color scheme
 
 ![Linkery screenshot](http://raphaelkabo.com/linkery.png)
 
-# Setup
+## Setup
 
 1. Run the directory on a local server.
 2. Copy the contents of `automator-service.applescript` into a new service created in Automator. You want it to receive no input in any application, and simply Run AppleScript. Make sure to change the directory to the location of Linkery (currently set as `/www/sites/links/`).
@@ -12,7 +12,7 @@ A browser-agnostic, MacOS-integrated link log, featuring a pleasing color scheme
 
 When you press your shortcut, the service will activate and save the currently open tab in the frontmost browser to Linkery's CSV database (creating it if it is absent).
 
-# Notes
+## Notes
 
 Linkery currently works in all forms of Chrome and all forms of Safari, but not Opera or Firefox, because neither have reliable AppleScript support (see [here](https://gist.github.com/vitorgalvao/5392178)). Thank you also to the authors of that code.
 
