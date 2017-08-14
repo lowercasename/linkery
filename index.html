@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <!-- Basic Page Needs
+    –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+    <meta charset="utf-8">
+    <title>Link Log</title>
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Mobile Specific Metas
+    –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- FONT
+    –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+    <link href="https://fonts.googleapis.com/css?family=Overpass:400,400i" rel="stylesheet">
+    <script src="https://use.fontawesome.com/b1edf242f0.js"></script>
+    
+    <!-- CSS
+    –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+    <link rel="stylesheet" href="css/normalize.css">
+    <link rel="stylesheet" href="css/skeleton.css">
+    
+    <!-- JS
+    –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="jquery-csv.js"></script>
+    <script src="list.js"></script>
+    <script src="jquery.timeago.js"></script>
+    <script src="mousetrap.min.js"></script>
+
+    <!-- Favicon
+    –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+    <link rel="icon" type="image/png" href="images/favicon-32x32.png" sizes="32x32" />
+    <link rel="icon" type="image/png" href="images/favicon-16x16.png" sizes="16x16" />
+
+</head>
+    
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="twelve columns">
+                <div id="bookmarks">
+
+                        <div class="row">
+                            <div class="three columns">
+                                <input class="u-full-width search" type="search" placeholder="Search">
+                            </div>
+                            <div class="three columns">
+                                <select class="u-full-width" name="tag" id="filtertag">
+                                    <option selected="selected" value="">Select a tag</option>
+                                </select>
+                            </div>
+                            <div class="three columns">
+                                <button class="sort u-full-width" data-sort="title">
+                                    By title
+                                </button>
+                            </div>
+                            <div class="three columns">
+                                <button class="sort u-full-width" data-sort="timestamp">
+                                    By date
+                                </button>
+                            </div>
+                        </div>
+
+
+                    <ul class="list"></ul>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container" style="margin-top:1em;">
+        <div class="row">
+            <div class="twelve columns" style="padding-top:2em;">
+                <p style="text-align:center;">Made with &hearts; by Raphael Kabo.</p>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+    $(document).ready(function() {
+        $.get('links.csv?v='+ (Date.now() % 10000), function(data) {
+            var links = $.csv.toObjects(data);
+            links.forEach(function(e,i){
+                if (typeof e === "object" ){
+                    e["id"] = i+1;
+                }
+            });
+            var options = {
+                valueNames: [ { name: 'timestamp', attr: 'datetime' }, 'title', { name: 'url', attr: 'href' }, 'tag', { name: 'id', attr: 'id' }],
+                item: '<li class="link"><time class="timeago timestamp"></time><a href class="url title"></a><span class="tag"></span><a class="id delete" href=""><i class="fa fa-trash-o" aria-hidden="true"></i></a></li>'
+            };
+            var linkList = new List('bookmarks', options, links);
+            linkList.sort('timestamp', { order: 'desc' });
+            
+            var option = '';
+            var uniqueTags = [];
+            var tags = links.map(function(item) { return item.tag;});
+            $.each(tags, function(i, t){
+                if($.inArray(t, uniqueTags) === -1) uniqueTags.push(t);
+            });
+            uniqueTags.sort();
+            for (var i=0;i<uniqueTags.length;i++){
+                option += '<option value="'+ uniqueTags[i] + '">' + uniqueTags[i] + '</option>';
+            }
+            $('#filtertag').append(option);
+            $('#filtertag').change(function () {
+                var selection = this.value;
+                if (selection) {
+                    linkList.filter(function(item) {
+                        return (item.values().tag == selection);
+                    });
+                } else {
+                    linkList.filter();
+                }
+            });
+            $("time.timeago").timeago();
+            $('a.delete').click(function() {
+                var deleteid = $(this).attr('id');
+                
+                /* Request to .php file */
+                var request = $.ajax({
+                    context: this,
+                    url: "csv.php",
+                    type: "POST",
+                    data: { id : deleteid },
+                    dataType: "html",
+                    success:function(data) {
+                        console.log(data); //=== Show Success Message==
+                        $(this).parent().remove();
+                    },
+                    error:function(data){
+                        console.log("error occured"); //===Show Error Message====
+                    }
+                });
+
+                event.preventDefault();
+                return false;
+            });
+            $("li.link").hover(
+            function () {
+                $(this).children("a.delete").show();
+            },
+            function () {
+                $(this).children("a.delete").hide();
+            });
+            $("a.delete").hover(
+            function() {
+                $(this).parent().css("background-color", "#eee8d5");
+            },
+            function() {
+                $(this).parent().css("background-color", "#fdf6e3");
+            });
+        });
+        Mousetrap.bind('command+f', function(e) {
+            $(".search").focus();
+            return false;
+        });
+    });
+    </script>
+    
+</body>
+</html>
