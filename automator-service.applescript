@@ -22,10 +22,6 @@ else
 	return "You need a supported browser as your frontmost app"
 end if
 
--- tell application "Google Chrome"
--- 	set currentURL to the URL of active tab of first window
--- 	set currentTitle to the title of active tab of first window
--- end tell
 set currentTags to the text returned of (display dialog "Tag:" default answer "general")
 set sanitisedTitle to "\"" & currentTabTitle & "\""
 set cmd to "if [ ! -e '/www/sites/links/links.csv' ]; then
