@@ -1,6 +1,6 @@
 # Linkery
 
-A browser-agnostic, MacOS-integrated link log
+A browser-agnostic, MacOS-integrated link log, featuring a pleasing color scheme, a basic tagging system (one tag per link), search, sorting by date and title, and tag filtering.
 
 # Setup
 
