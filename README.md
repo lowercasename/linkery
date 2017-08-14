@@ -4,6 +4,11 @@ A browser-agnostic, MacOS-integrated link log, featuring a pleasing color scheme
 
 ![Linkery screenshot](http://raphaelkabo.com/linkery.png)
 
+## Requirements
+
+- MacOS
+- PHP, but only for the delete function - if anyone can teach me how to delete records from a CSV file without needing to run a PHP file, that would be great.
+
 ## Setup
 
 1. Run the directory on a local server.
